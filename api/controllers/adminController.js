@@ -1,55 +1,75 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jwt-simple';
 import { Admin } from '../models/index.js';
 import config from '../config/index.js';
 
-const create = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 5);
-    const newAdmin = {
-      ...req.body,
-      password: hashedPassword,
-    };
-    const createdAdmin = await Admin.create(newAdmin);
-    res.status(201).json(createdAdmin);
+    const encryptedPass = await bcrypt.hash(req.body.password, 5);
+    req.body.password = encryptedPass;
+
+    const newAdmin = await Admin.create(req.body)
+    newAdmin.password = undefined;
+
+    res.json({
+      msg: 'Admin registrado',
+      data: newAdmin,
+    });
   } catch (error) {
     return res.status(500).json({ error });
   }
 };
 
 const login = async (req, res) => {
+  const { password, email } = req.body
   try {
-    const admin = await Admin.findOne(req.email);
+    const admin = await Admin.findOne({ email });
     if (!admin) {
       return res.status(401).json({
-        msg: 'Credenciales erróneas',
+        msg: 'Credenciales erroneas'
       });
-    };
+    }
 
-    const compared = await bcrypt.compare(req.password);
-    if (!compared) {
+    const match = await bcrypt.compare(password, admin.password);
+    if (!match) {
       return res.status(401).json({
-        msg: 'Bad credentials',
+        msg: 'Credenciales erroneas',
       });
-    };
+    }
 
-    admin.password = undefined;
+    const payload = {
+      adminId: admin.id,
+    }
 
-    const token = jwt.encode(admin, config.token.secret);
+    const token = jwt.encode(payload, config.token.secret);
     return res.json({
-      msg: 'Login satisfactorio',
+      msg: 'Login correcto',
       token,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       msg: 'Error al hacer login',
     });
   }
 };
 
+const getAll = async (req, res) => {
+  try {
+    const admin = await Admin.find({}, {password: 0, _id: 0});
+    return res.json({
+      msg: 'Admins encontrados',
+      data: admin,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error al obtener admins',
+      error
+    });
+  }
+};
 
 export {
-  create,
+  register,
   login,
+  getAll,
 };

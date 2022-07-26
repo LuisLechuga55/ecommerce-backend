@@ -4,8 +4,10 @@ import { createAdminValidator, loginAdminValidator } from '../middlewares/index.
 
 const router = express.Router();
 
-router.post('/register', createAdminValidator, adminController.create);
+router.post('/register', createAdminValidator, adminController.register);
 
 router.post('/login', loginAdminValidator, adminController.login);
+
+router.get('/', adminController.getAll);
 
 export default router;
