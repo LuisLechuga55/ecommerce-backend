@@ -1,0 +1,1 @@
+export { default as costumerRoutes } from './costumerRoutes.js';

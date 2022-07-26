@@ -1,0 +1,1 @@
+export * as costumerController from './costumerController.js';
