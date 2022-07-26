@@ -6,7 +6,7 @@ const port = 4000;
 const server = http.createServer(api);
 
 server.on('listening', ()=> {
-  console.log(`Servidor ejecutandose en ${port}`);
+  console.log(`Servidor ejecutandose en el puerto ${port}`);
 })
 
 server.on('error', (err) => {
