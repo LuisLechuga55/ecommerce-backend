@@ -1,8 +1,8 @@
 import jwt from 'jwt-simple';
 import config from '../config/index.js';
-import { Admin } from '../models/index.js';
+import { Costumer } from '../models/index.js';
 
-const protectedAdmin = async (req, res, next) => {
+const protectedCostum = async (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
     return res.status(401).json({
@@ -11,11 +11,11 @@ const protectedAdmin = async (req, res, next) => {
   }
   try {
     const payload = jwt.decode(token, config.token.secret);
-    const admin = await Admin.findById(payload.adminId);
-    if (!admin) {
-      return res.status(401).json('No tienes autorizacion');
+    const costum = await Costumer.findById(payload.costumId);
+    if (!costum) {
+      return res.status(401).json('No has iniciado sesion');
     }
-    req.admin = admin;
+    req.costum = costum;
     next();
   } catch (error) {
     return res.status(401).json({
@@ -25,4 +25,4 @@ const protectedAdmin = async (req, res, next) => {
   }
 };
 
-export default protectedAdmin;
+export default protectedCostum;
