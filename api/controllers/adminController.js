@@ -55,7 +55,7 @@ const login = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const admin = await Admin.find({}, {password: 0, _id: 0});
+    const admin = await Admin.find({}, {password: 0});
     return res.json({
       msg: 'Admins encontrados',
       data: admin,
