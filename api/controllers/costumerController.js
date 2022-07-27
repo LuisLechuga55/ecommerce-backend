@@ -55,7 +55,7 @@ const login = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const costum = await Costumer.find({}, {password: 0, _id: 0});
+    const costum = await Costumer.find({}, {password: 0});
     return res.json({
       msg: 'Costumers encontrados',
       data: costum,
