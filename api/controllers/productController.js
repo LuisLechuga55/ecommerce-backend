@@ -48,9 +48,22 @@ const deleteProduct = async (req, res) => {
 };
 
 const getProductsFilters = async (req, res) => {
+  const minPrice = req.query.minPrice;
+  const maxPrice = req.query.maxPrice;
+  
+  const prices = {
+    price : { $gte :  minPrice, $lte :  maxPrice},
+  };
+
+  delete req.query.minPrice;
+  delete req.query.maxPrice;
+
   const filters = req.query;
+
+  const filterObject = Object.assign({}, prices, filters);
+
   try {
-    const products = await Product.find(filters);
+    const products = await Product.find(filterObject);
     return res.json({
       msg: 'Productos encontrados',
       data: products,
