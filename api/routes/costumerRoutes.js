@@ -5,9 +5,11 @@ import { createCostumValidator, loginCostumValidator } from '../middlewares/inde
 const router = express.Router();
 
 
-router.post('/register', createCostumValidator, costumerController.create);
+router.post('/register', createCostumValidator, costumerController.register);
 
 router.post('/login', loginCostumValidator, costumerController.login);
+
+router.get('/', costumerController.getAll);
 
 
 export default router;

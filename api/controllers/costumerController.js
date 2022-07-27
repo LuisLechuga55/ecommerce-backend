@@ -1,54 +1,75 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jwt-simple';
 import { Costumer } from '../models/index.js';
 import config from '../config/index.js';
 
-const create = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 5);
-    const newCostumer = {
-      ...req.body,
-      password: hashedPassword,
-    };
-    const createdCostumer = await Costumer.create(newCostumer);
-    res.status(201).json(createdCostumer);
+    const encryptedPass = await bcrypt.hash(req.body.password, 5);
+    req.body.password = encryptedPass;
+
+    const newCostum = await Costumer.create(req.body)
+    newCostum.password = undefined;
+
+    res.json({
+      msg: 'Costumer registrado',
+      data: newCostum,
+    });
   } catch (error) {
     return res.status(500).json({ error });
   }
 };
 
 const login = async (req, res) => {
+  const { password, email } = req.body
   try {
-    const costumer = await Costumer.findOne(req.email);
-    if (!costumer) {
+    const costum = await Costumer.findOne({ email });
+    if (!costum) {
       return res.status(401).json({
-        msg: 'Credenciales erróneas',
+        msg: 'Credenciales erroneas'
       });
-    };
+    }
 
-    const compared = await bcrypt.compare(req.password);
-    if (!compared) {
+    const match = await bcrypt.compare(password, costum.password);
+    if (!match) {
       return res.status(401).json({
-        msg: 'Bad credentials',
+        msg: 'Credenciales erroneas',
       });
-    };
+    }
 
-    costumer.password = undefined;
+    const payload = {
+      costumId: costum.id,
+    }
 
-    const token = jwt.encode(costumer, config.token.secret);
+    const token = jwt.encode(payload, config.token.secret);
     return res.json({
-      msg: 'Login satisfactorio',
+      msg: 'Login correcto',
       token,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       msg: 'Error al hacer login',
     });
   }
 };
 
+const getAll = async (req, res) => {
+  try {
+    const costum = await Costumer.find({}, {password: 0, _id: 0});
+    return res.json({
+      msg: 'Costumers encontrados',
+      data: costum,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'Error al obtener costumers',
+      error,
+    });
+  }
+};
+
 export {
-  create,
+  register,
   login,
+  getAll,
 };
