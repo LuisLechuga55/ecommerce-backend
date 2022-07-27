@@ -1,5 +1,5 @@
 import express from 'express';
-import { costumerRoutes, adminRoutes, productRoutes } from './routes/index.js';
+import { costumerRoutes, adminRoutes, productRoutes, orderRoutes } from './routes/index.js';
 
 const api = express();
 
@@ -18,5 +18,7 @@ api.use('/ecommerce/admin', adminRoutes);
 api.use('/ecommerce/costumer', costumerRoutes);
 
 api.use('/ecommerce/product', productRoutes);
+
+api.use('/ecommerce/order', orderRoutes);
 
 export default api;
