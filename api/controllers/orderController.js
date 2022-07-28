@@ -44,7 +44,7 @@ const addDiscount = async (req, res) => {
     const discount = await Order.create({
       costumer: req.costum.id,
       products: req.body.products,
-      discounts: req.body.discounts,
+      discount: req.body.discount,
     });
     return res.json({
       msg: 'Descuento creado',
@@ -61,19 +61,28 @@ const addDiscount = async (req, res) => {
 const orderDiscount = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await Order.findById(id).populate('products').populate('discounts');
+    const order = await Order.findById(id).populate('products').populate('discount');
     let totalOrder = 0;
-    let newTotal = order.products.forEach((product) => {
+    order.products.forEach((product) => {
       totalOrder += product.price;
     });
 
-    if (order.discounts.typeDiscount == 'percent') {
-      newTotal
+    console.log(order);
+    const percent = order.discount.typeDiscount === 'percent';
+    const percentNum = order.discount.numDiscount;
+
+    const amount = order.discount.typeDiscount === 'amount';
+    const amountNum = order.discount.numDiscount;
+
+    if (percent) {
+      totalOrder -= totalOrder * percentNum / 100
     };
 
-    if (order.discounts.typeDiscount == 'amount') {
-      newTotal
+    if (amount) {
+      totalOrder -= amountNum
     };
+    order.total = totalOrder
+    await order.save();
     return res.json({
       msg: 'Pedido actualizado con Descuento',
       data: order,
