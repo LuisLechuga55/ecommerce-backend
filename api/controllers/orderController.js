@@ -67,7 +67,6 @@ const orderDiscount = async (req, res) => {
       totalOrder += product.price;
     });
 
-    console.log(order);
     const percent = order.discount.typeDiscount === 'percent';
     const percentNum = order.discount.numDiscount;
 
