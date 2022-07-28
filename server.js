@@ -2,7 +2,7 @@ import http from 'http';
 import api from './api/api.js';
 import database from './api/config/database.js';
 
-const port = 4000;
+const port = process.env.PORT || 3000;
 const server = http.createServer(api);
 
 server.on('listening', ()=> {
