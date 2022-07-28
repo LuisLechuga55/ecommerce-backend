@@ -10,10 +10,10 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
   }],
-  orders: {
+  discounts: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Discount'
-  },
+  }],
   total: {
     type: Number,
     required: true,
